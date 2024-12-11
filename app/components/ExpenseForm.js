@@ -13,7 +13,7 @@ export default function ExpenseForm({ onAddExpense }) {
             onAddExpense({
                 description,
                 amount: parseFloat(amount),
-                date
+                date,
             });
             setDescription('');
             setAmount('');

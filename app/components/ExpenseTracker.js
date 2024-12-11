@@ -1,41 +1,32 @@
-import { useState, useEffect } from "react";
-import ExpenseForm from "./ExpenseForm";
-import ExpenseList from "./ExpenseList";
+'use client';
+
+import { useState, useEffect } from 'react';
+import ExpenseForm from './ExpenseForm';
+import ExpenseList from './ExpenseList';
+import { getExpenses, addExpense } from '../utils/expenses';
 
 export default function ExpenseTracker() {
-  const [expenses, setExpenses] = useState([]);
+    const [expenses, setExpenses] = useState([]);
 
-  // Fetch expenses from the API
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      const response = await fetch("/api/expenses");
-      const data = await response.json();
-      setExpenses(data);
+    // Fetch expenses from Firestore on component mount
+    useEffect(() => {
+        async function fetchExpenses() {
+            const data = await getExpenses();
+            setExpenses(data);
+        }
+        fetchExpenses();
+    }, []);
+
+    // Add new expense (updates Firestore and local state)
+    const handleAddExpense = (expense) => {
+        setExpenses([...expenses, { ...expense, id: Date.now() }]); // Optimistically update UI
+        addExpense(expense); // Send to Firestore
     };
-    fetchExpenses();
-  }, []);
 
-  // Add an expense to Firestore through the API
-  const addExpense = async (expense) => {
-    const response = await fetch("/api/expenses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(expense),
-    });
-
-    if (response.ok) {
-      setExpenses((prevExpenses) => [...prevExpenses, expense]);
-    } else {
-      console.error("Failed to add expense");
-    }
-  };
-
-  return (
-    <div className="space-y-8">
-      <ExpenseForm onAddExpense={addExpense} />
-      <ExpenseList expenses={expenses} />
-    </div>
-  );
+    return (
+        <div className="space-y-8">
+            <ExpenseForm onAddExpense={handleAddExpense} />
+            <ExpenseList expenses={expenses} />
+        </div>
+    );
 }

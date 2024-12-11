@@ -1,11 +1,6 @@
-import { Expense } from './ExpenseTracker';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-interface ExpenseListProps {
-  expenses: Expense[];
-}
-
-export function ExpenseList({ expenses }: ExpenseListProps) {
+export function ExpenseList({ expenses }) {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-2">Expenses</h2>
